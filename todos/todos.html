@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="vue.js"></script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        body{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input[type=button]{
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        input{
+            width: 300px;
+            height: 30px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        input.button{
+            float: right;
+            width: 50px;
+            height: 30px;
+            border: none;
+            outline: none;
+            background: #666;
+            color: #fff;
+            text-align: center;
+            line-height: 20px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+
+        .check{
+            background: red;
+        }
+        .hot{
+            background: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <input type="text" v-model="con" @keyup.13="add" placeholder="请输入数据">
+        <div>
+            <input type="button" value="all" @click="select('all')" class="button" :class="{hot:status=='all'}">
+            <input type="button" value="finished" @click="select('1')" class="button" :class="{hot:status=='1'}">
+            <input type="button" value="unfinished" @click="select('0')" class="button" :class="{hot:status=='0'}">
+        </div>
+        <ul v-for="item in datas" style="margin-top: 40px">
+            <li>
+                <div v-if="item.edits" @dblclick="edit(item)">
+                    <input type="button" @click="changestatu(item)" :class="{check:item.status==1}">
+                    <span>{{item.title}}</span>
+                    <button @click="del(item.id)">删除</button>
+                </div>
+                <div v-else="">
+                    <input type="text" v-model="item.title" @blur="blur(item)">
+                </div>
+            </li>
+        </ul>
+        <div v-show="list.length==0">没有数据</div>
+    </div>
+</body>
+<script>
+    new Vue({
+        el:'#app',
+        data:{
+            con:'',
+            list:[],
+            status:'all',
+            data:[]
+        },
+        methods:{
+            add(){
+                if(!this.con){
+                    alert('输入内容');
+                    return;
+                }
+                var obj = {id:Math.random(),title:this.con,status:0,edits:1};
+                this.list.push(obj);
+                this.con = '';
+            },
+            del(id){
+                this.list = this.list.filter(ele=>ele.id!=id);
+            },
+
+            changestatu(obj){
+               if(obj.status){
+                   obj.status=0;
+               }else{
+                   obj.status=1;
+               }
+            },
+
+            select(val){
+                this.status = val;
+            },
+
+            edit(item){
+                item.edits =0;
+            },
+
+            blur(item){
+                item.edits =1;
+            }
+
+        },
+
+        computed:{
+            datas(){
+                console.log(333);
+                if(this.status=='all'){
+                    this.data = this.list;
+                }else if(this.status=='0'){
+                    this.data = this.list.filter(ele=>ele.status==0)
+                }else if(this.status=='1'){
+                   this.data =  this.list.filter(ele=>ele.status==1)
+                }
+                return this.data;
+            }
+        }
+
+
+    })
+</script>
+</html>
